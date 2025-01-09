@@ -1,0 +1,33 @@
+name: Dreddit APK Builder
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  apk:
+    name: Setup 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          
+      - name: Clone and build APK 
+        env:
+          APP_VARIANT: prod
+        run: |
+          git clone https://github.com/tictechtown/dreddit 
+          cd dreddit
+          npm install 
+          npx expo prebuild 
+          cd android 
+          ./gradlew assembleRelease
+    
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dreddit-build
+          path: ${{ github.workspace }}/dreddit/android/app/build/outputs/apk/release/app-release.apk
