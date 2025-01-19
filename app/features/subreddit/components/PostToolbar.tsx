@@ -1,4 +1,4 @@
-import { Link } from 'expo-router';
+import { router } from 'expo-router';
 import React from 'react';
 import { Share, TouchableNativeFeedback, TouchableOpacity, View } from 'react-native';
 import { Post } from '../../../services/api';
@@ -56,16 +56,16 @@ const PostToolbar = ({
           columnGap: 8,
         }}>
         <PostKarmaButton karma={post.data.score} />
-        <Link
-          href={{
-            pathname: `features/post/${post.data.id}`,
-            params: { postid: post.data.id },
-          }}
-          asChild>
-          <TouchableOpacity hitSlop={20}>
-            <PostCommentButton comments={post.data.num_comments} theme={theme} />
-          </TouchableOpacity>
-        </Link>
+        <TouchableOpacity
+          hitSlop={20}
+          onPressIn={() => {
+            router.push({
+              pathname: `features/post/${post.data.id}`,
+              params: { postid: post.data.id },
+            });
+          }}>
+          <PostCommentButton comments={post.data.num_comments} theme={theme} />
+        </TouchableOpacity>
       </View>
 
       <View
@@ -75,7 +75,7 @@ const PostToolbar = ({
         }}>
         {/* Share */}
         <TouchableOpacity
-          onPress={async () => {
+          onPressIn={async () => {
             await Share.share({ message: post.data.url });
           }}
           hitSlop={20}>
@@ -85,7 +85,7 @@ const PostToolbar = ({
         {/* Save */}
         <TouchableNativeFeedback
           background={TouchableNativeFeedback.Ripple(theme.surfaceVariant, true, 20)}
-          onPress={async () => {
+          onPressIn={async () => {
             if (isSaved) {
               removeFromSavedPosts?.(post);
             } else {
@@ -105,7 +105,7 @@ const PostToolbar = ({
         {!!onMoreOptions && (
           <TouchableNativeFeedback
             background={TouchableNativeFeedback.Ripple(theme.surfaceVariant, true, 20)}
-            onPress={() => {
+            onPressIn={() => {
               onMoreOptions(post);
             }}
             hitSlop={20}>
@@ -115,17 +115,6 @@ const PostToolbar = ({
           </TouchableNativeFeedback>
         )}
       </View>
-
-      {/* View Profile?
-    <Link
-      href={{
-        pathname: 'features/user',
-        params: { userid: post.data.author },
-      }}
-      asChild>
-      <TouchableOpacity hitSlop={20}>
-      </TouchableOpacity>
-    </Link> */}
     </View>
   );
 };

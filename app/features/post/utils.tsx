@@ -165,13 +165,27 @@ export const markdownRenderRules: RenderRules = {
     if (children[0] != null && children[0].key.endsWith('_thead')) {
       // @ts-ignore
       const totalTH = children[0].props.children[0].props.children.length ?? 0;
-      shouldUseScrollView = totalTH > 6;
+      shouldUseScrollView = totalTH > 5;
     }
     if (shouldUseScrollView) {
       return (
         <View key={node.key} style={{ flex: 1 }}>
           <ScrollView horizontal style={{ flex: 1 }}>
-            <View style={styles._VIEW_SAFE_table}>{children}</View>
+            <View style={{ ...styles._VIEW_SAFE_table, flexDirection: 'row' }}>
+              {Array.from({
+                // @ts-ignore
+                length: children[0]?.props?.children[0].props.children.length ?? 0,
+              }).map((_, index) => {
+                return (
+                  <View>
+                    {/** @ts-ignore - header*/}
+                    {children[0]?.props?.children[0].props.children[index]}
+                    {/** @ts-ignore - content */}
+                    {children[1]?.props?.children.map((child) => child.props.children[index])}
+                  </View>
+                );
+              })}
+            </View>
           </ScrollView>
         </View>
       );
